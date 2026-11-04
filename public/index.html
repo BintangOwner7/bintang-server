@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BintangProject Monitor</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Share+Tech+Mono&display=swap');
+  :root { --bg: #06080a; --panel: #0d1117; --border: #1f2937; --txt: #e2e8f0; --muted: #64748b; --cyan: #00d2ff; --green: #10b981; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--txt); font-family: 'Inter', sans-serif; padding-bottom: 90px; }
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); background: rgba(6, 8, 10, 0.8); position: sticky; top: 0; z-index: 50; }
+  .header-title h1 { margin: 0; font-size: 18px; letter-spacing: 2px; font-weight: 800; font-family: 'Share Tech Mono', monospace; }
+  .header-title h1 span { color: var(--cyan); }
+  .header-title p { margin: 2px 0 0; font-size: 9px; color: var(--muted); letter-spacing: 4px; }
+  .section-header { padding: 24px 20px 12px; }
+  .section-header h2 { font-size: 16px; font-weight: 800; margin: 0; font-family: 'Share Tech Mono', monospace; }
+  .device-list { display: flex; flex-direction: column; gap: 14px; padding: 0 20px; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 16px; display: flex; gap: 16px; border-left: 4px solid var(--cyan); }
+  .card-icon { width: 60px; height: 80px; border-radius: 10px; background: #000; border: 1px solid var(--border); display: grid; place-items: center; }
+  .card-icon svg { width: 28px; height: 28px; fill: var(--cyan); }
+  .card-info { flex: 1; }
+  .card-title { font-size: 15px; font-weight: 700; margin: 0 0 4px; font-family: 'Share Tech Mono', monospace; }
+  .card-sub { font-size: 11px; color: var(--muted); margin: 0 0 4px; }
+  .card-ip { font-size: 12px; font-family: 'Share Tech Mono', monospace; color: var(--cyan); margin: 0 0 6px; }
+  .card-status { font-size: 10px; font-weight: 700; color: var(--muted); }
+  .status-online { color: var(--green) !important; }
+  .empty-state { color: var(--muted); text-align: center; padding: 40px 0; font-family: 'Share Tech Mono', monospace; font-size: 13px; }
+</style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-title">
+      <h1>BINTANG<span>PROJECT</span></h1>
+      <p>LIVE MONITOR</p>
+    </div>
+  </header>
+  <div class="section-header"><h2>TARGET AKTIF</h2></div>
+  <div class="device-list" id="device-list">
+    <div class="empty-state">Menunggu koneksi masuk...</div>
+  </div>
+<script>
+  async function fetchDevices() {
+    try {
+      const res = await fetch('/api/devices');
+      const devices = await res.json();
+      const list = document.getElementById('device-list');
+      if (devices.length === 0) {
+        list.innerHTML = '<div class="empty-state">Menunggu koneksi masuk...</div>';
+        return;
+      }
+      list.innerHTML = devices.map(d => `
+        <div class="card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">${d.name}</h3>
+            <p class="card-sub">(INDONESIA)</p>
+            <p class="card-ip">${d.ip}</p>
+            <p class="card-status status-online">ONLINE</p>
+          </div>
+        </div>
+      `).join('');
+    } catch (e) { console.error(e); }
+  }
+  fetchDevices();
+  setInterval(fetchDevices, 3000);
+</script>
+</body>
+</html>
